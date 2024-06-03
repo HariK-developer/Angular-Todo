@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
-import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Todo } from '../todo';
+
 
 @Component({
   selector: 'app-todo',
@@ -10,7 +16,8 @@ import { Todo } from '../todo';
   templateUrl: './todo.component.html',
   styleUrls: ['./todo.component.css'], // Corrected to styleUrls
 })
-export class TodoComponent implements OnInit { // Implement OnInit interface
+export class TodoComponent implements OnInit {
+  // Implement OnInit interface
   todoList: Array<Todo> = [];
   applyForm: FormGroup;
 
@@ -23,11 +30,14 @@ export class TodoComponent implements OnInit { // Implement OnInit interface
   }
 
   ngOnInit() {
-    this.apiService.getData().then((todo: Todo[]) => {
-      this.todoList = todo;
-    }).catch((error) => {
-      console.error('Error fetching todo:', error);
-    });
+    this.apiService
+      .getTodo()
+      .then((todo: Todo[]) => {
+        this.todoList = todo;
+      })
+      .catch((error) => {
+        console.error('Error fetching todo:', error);
+      });
   }
 
   createTodo() {
@@ -39,7 +49,7 @@ export class TodoComponent implements OnInit { // Implement OnInit interface
       };
 
       this.apiService
-        .postData(todo)
+        .createTodo(todo)
         .then((createdTodo) => {
           console.log('Todo created:', createdTodo);
           this.ngOnInit();
@@ -53,5 +63,20 @@ export class TodoComponent implements OnInit { // Implement OnInit interface
     } else {
       alert('Please fill out the form correctly.');
     }
+  }
+
+  updateTodo(todo: Todo,completed?: boolean) {
+    todo.completed = completed;
+    this.apiService
+      .updateTodo(todo)
+      .then((updatedTodo) => {
+        console.log('Todo updated:', updatedTodo);
+        this.ngOnInit();
+        alert('Todo updated successfully');
+      })
+      .catch((error) => {
+        console.error('Error updating todo:', error);
+        alert(error.message);
+      });
   }
 }
